@@ -111,11 +111,17 @@ async function displayAlbums(genre) {
         const accessToken = await getAccessToken(clientId, clientSecret);
         console.log('Access Token:', accessToken); // Debugging log
 
-        const albums = await getAlbumsByGenre(accessToken, 'metal');
+        const albums = await getAlbumsByGenre(accessToken, genre);
         console.log('Albums:', albums); // Debugging log
 
         const albumList = document.getElementById('album-list');
         albumList.innerHTML = '';
+
+        if (albums.length === 0) {
+            console.log('No albums found for the specified genre and date filter.');
+            albumList.innerHTML = '<li>No recent albums found for the specified genre.</li>';
+            return;
+        }
 
         albums.forEach(album => {
             const listItem = document.createElement('li');
@@ -125,6 +131,8 @@ async function displayAlbums(genre) {
             listItem.appendChild(link);
             albumList.appendChild(listItem);
         });
+
+        console.log('Album list updated successfully.');
     } catch (error) {
         console.error('Error displaying albums:', error);
         const albumList = document.getElementById('album-list');
