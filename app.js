@@ -115,7 +115,7 @@ async function displayAlbums(genre) {
         console.log('Albums:', albums); // Debugging log
 
         const albumList = document.getElementById('album-list');
-        albumList.innerHTML = '';
+        albumList.innerHTML = ''; // Clear the list before appending new items
 
         if (albums.length === 0) {
             console.log('No albums found for the specified genre and date filter.');
@@ -129,7 +129,7 @@ async function displayAlbums(genre) {
             link.href = album.external_urls.spotify;
             link.textContent = `${album.name} by ${album.artists.map(artist => artist.name).join(', ')}`;
             listItem.appendChild(link);
-            albumList.appendChild(listItem);
+            albumList.appendChild(listItem); // Append each item to the list
         });
 
         console.log('Album list updated successfully.');
