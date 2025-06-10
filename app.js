@@ -123,7 +123,8 @@ async function displayAlbums(genre) {
             return;
         }
 
-        albums.forEach(album => {
+        albums.forEach((album, index) => {
+            console.log(`Appending album ${index + 1}:`, album.name); // Debugging log for each album
             const listItem = document.createElement('li');
             const link = document.createElement('a');
             link.href = album.external_urls.spotify;
@@ -142,5 +143,4 @@ async function displayAlbums(genre) {
 
 // Example call to display albums by genre
 displayAlbums('metal');
-alert('Albums loaded successfully. Check the console for details.');
 
