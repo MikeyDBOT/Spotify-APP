@@ -80,13 +80,13 @@ async function getAlbumsByGenre(accessToken, genre) {
         // Log release dates for debugging
         console.log('Release dates before sorting:', data.albums.items.map(album => album.release_date));
 
-        // Filter albums released in the last year
-        const oneYearAgo = new Date();
-        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        // Filter albums released in the last 5 years
+        const fiveYearsAgo = new Date();
+        fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
 
         const recentAlbums = data.albums.items.filter(album => {
             const releaseDate = new Date(album.release_date || '1970-01-01');
-            return releaseDate >= oneYearAgo;
+            return releaseDate >= fiveYearsAgo;
         });
 
         // Sort albums by release date (if available)
