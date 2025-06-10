@@ -59,32 +59,47 @@ async function getLatestAlbums(accessToken) {
 
 async function getAlbumsByGenre(accessToken, genre) {
     try {
-        const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${encodeURIComponent(genre)}&type=album&limit=50`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
+        let allAlbums = [];
+        let offset = 0;
+        const limit = 50;
 
-        if (!response.ok) {
-            console.error(`Failed to fetch albums by genre: ${response.status} ${response.statusText}`);
-            throw new Error(`Failed to fetch albums by genre: ${response.status} ${response.statusText}`);
-        }
+        while (true) {
+            const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${encodeURIComponent(genre)}&type=album&limit=${limit}&offset=${offset}`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            });
 
-        const data = await response.json();
+            if (!response.ok) {
+                console.error(`Failed to fetch albums by genre: ${response.status} ${response.statusText}`);
+                throw new Error(`Failed to fetch albums by genre: ${response.status} ${response.statusText}`);
+            }
 
-        if (!data.albums || !data.albums.items) {
-            console.error('Invalid response structure:', data);
-            throw new Error('Invalid response structure from Spotify API');
+            const data = await response.json();
+
+            if (!data.albums || !data.albums.items) {
+                console.error('Invalid response structure:', data);
+                throw new Error('Invalid response structure from Spotify API');
+            }
+
+            allAlbums = allAlbums.concat(data.albums.items);
+
+            // Break if fewer items than the limit are returned (end of results)
+            if (data.albums.items.length < limit) {
+                break;
+            }
+
+            offset += limit; // Move to the next page
         }
 
         // Log release dates for debugging
-        console.log('Release dates before sorting:', data.albums.items.map(album => album.release_date));
+        console.log('Release dates before sorting:', allAlbums.map(album => album.release_date));
 
         // Filter albums released in the last 5 years
         const fiveYearsAgo = new Date();
         fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
 
-        const recentAlbums = data.albums.items.filter(album => {
+        const recentAlbums = allAlbums.filter(album => {
             const releaseDate = new Date(album.release_date || '1970-01-01');
             return releaseDate >= fiveYearsAgo;
         });
