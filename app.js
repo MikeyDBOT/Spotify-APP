@@ -84,12 +84,12 @@ async function getAlbumsByGenre(accessToken, genre) {
     }
 }
 
-async function displayAlbums() {
+async function displayAlbums(genre) {
     try {
-        const accessToken = await getAccessToken();
+        const accessToken = await getAccessToken(clientId, clientSecret);
         console.log('Access Token:', accessToken); // Debugging log
 
-        const albums = await getLatestAlbums(accessToken);
+        const albums = await getAlbumsByGenre(accessToken, genre);
         console.log('Albums:', albums); // Debugging log
 
         const albumList = document.getElementById('album-list');
@@ -110,4 +110,5 @@ async function displayAlbums() {
     }
 }
 
-displayAlbums();
+// Example call to display albums by genre
+displayAlbums('metal');
