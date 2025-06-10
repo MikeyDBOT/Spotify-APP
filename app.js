@@ -3,7 +3,7 @@ const clientSecret = '529f6c9e934347e6b336723c175981b2';
 
 //https://mikeydbot.github.io/Spotify-APP/
 
-async function getAccessToken() {
+async function getAccessToken(clientId, clientSecret) {
     try {
         const body = new URLSearchParams();
         body.append('grant_type', 'client_credentials');
