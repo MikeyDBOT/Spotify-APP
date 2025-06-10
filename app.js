@@ -63,14 +63,10 @@ async function getAlbumsByGenre(accessToken, genre) {
         let offset = 0;
         const limit = 50;
 
-        // Get the current year and month
-        const currentYear = new Date().getFullYear();
-        const currentMonth = new Date().getMonth() + 1; // Months are 0-based
-
-        console.log(`Fetching albums for genre: ${genre}, year: ${currentYear}, month: ${currentMonth}`); // Debugging log
+        console.log(`Fetching albums for genre: ${genre}`); // Debugging log
 
         while (true) {
-            const query = `genre:${encodeURIComponent(genre)}`; // Removed year filter for testing
+            const query = genre ? `genre:${encodeURIComponent(genre)}` : ''; // Removed all filters for testing
             console.log(`API Query: ${query}`); // Debugging log
 
             const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&limit=${limit}&offset=${offset}`, {
@@ -106,29 +102,12 @@ async function getAlbumsByGenre(accessToken, genre) {
         // Log release dates for debugging
         console.log('Release dates before sorting:', allAlbums.map(album => album.release_date));
 
-        // Filter albums released in the current month and year
-        const filteredAlbums = allAlbums.filter(album => {
-            const releaseDate = new Date(album.release_date || '1970-01-01');
-            return releaseDate.getFullYear() === currentYear && (releaseDate.getMonth() + 1) === currentMonth;
-        });
-
-        // If no albums are found, fetch without filters as fallback
-        if (filteredAlbums.length === 0) {
-            console.log('No albums found for the current month and year. Fetching without filters as fallback.');
-            return allAlbums; // Return all albums without filtering
+        // If no albums are found, log a message
+        if (allAlbums.length === 0) {
+            console.log('No albums found for the specified genre.');
         }
 
-        // Sort albums by release date (if available)
-        const sortedAlbums = filteredAlbums.sort((a, b) => {
-            const dateA = new Date(a.release_date || '1970-01-01');
-            const dateB = new Date(b.release_date || '1970-01-01');
-            return dateB - dateA; // Descending order
-        });
-
-        // Log sorted albums for debugging
-        console.log('Sorted albums for current month and year:', sortedAlbums);
-
-        return sortedAlbums;
+        return allAlbums; // Return all albums without filtering
     } catch (error) {
         console.error('Error fetching albums by genre:', error);
         throw error;
