@@ -18,6 +18,7 @@ async function getAccessToken() {
         });
 
         if (!response.ok) {
+            console.error(`Failed to fetch access token: ${response.status} ${response.statusText}`);
             throw new Error(`Failed to fetch access token: ${response.status} ${response.statusText}`);
         }
 
@@ -38,6 +39,7 @@ async function getLatestAlbums(accessToken) {
         });
 
         if (!response.ok) {
+            console.error(`Failed to fetch albums: ${response.status} ${response.statusText}`);
             throw new Error(`Failed to fetch albums: ${response.status} ${response.statusText}`);
         }
 
