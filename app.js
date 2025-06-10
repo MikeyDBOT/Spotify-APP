@@ -63,8 +63,12 @@ async function getAlbumsByGenre(accessToken, genre) {
         let offset = 0;
         const limit = 50;
 
+        // Get the current year and month
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth() + 1; // Months are 0-based
+
         while (true) {
-            const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${encodeURIComponent(genre)}&type=album&limit=${limit}&offset=${offset}`, {
+            const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${encodeURIComponent(genre)}%20year:${currentYear}%20tag:new&type=album&limit=${limit}&offset=${offset}`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -95,24 +99,21 @@ async function getAlbumsByGenre(accessToken, genre) {
         // Log release dates for debugging
         console.log('Release dates before sorting:', allAlbums.map(album => album.release_date));
 
-        // Filter albums released in the last 5 years
-        const fiveYearsAgo = new Date();
-        fiveYearsAgo.setFullYear(fiveYearsAgo.getFullYear() - 5);
-
-        const recentAlbums = allAlbums.filter(album => {
+        // Filter albums released in the current month and year
+        const filteredAlbums = allAlbums.filter(album => {
             const releaseDate = new Date(album.release_date || '1970-01-01');
-            return releaseDate >= fiveYearsAgo;
+            return releaseDate.getFullYear() === currentYear && (releaseDate.getMonth() + 1) === currentMonth;
         });
 
         // Sort albums by release date (if available)
-        const sortedAlbums = recentAlbums.sort((a, b) => {
+        const sortedAlbums = filteredAlbums.sort((a, b) => {
             const dateA = new Date(a.release_date || '1970-01-01');
             const dateB = new Date(b.release_date || '1970-01-01');
             return dateB - dateA; // Descending order
         });
 
         // Log sorted albums for debugging
-        console.log('Sorted recent albums:', sortedAlbums);
+        console.log('Sorted albums for current month and year:', sortedAlbums);
 
         return sortedAlbums;
     } catch (error) {
