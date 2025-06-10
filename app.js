@@ -77,12 +77,18 @@ async function getAlbumsByGenre(accessToken, genre) {
             throw new Error('Invalid response structure from Spotify API');
         }
 
+        // Log release dates for debugging
+        console.log('Release dates before sorting:', data.albums.items.map(album => album.release_date));
+
         // Sort albums by release date (if available)
         const sortedAlbums = data.albums.items.sort((a, b) => {
             const dateA = new Date(a.release_date || '1970-01-01');
             const dateB = new Date(b.release_date || '1970-01-01');
             return dateB - dateA; // Descending order
         });
+
+        // Log sorted albums for debugging
+        console.log('Sorted albums:', sortedAlbums);
 
         return sortedAlbums;
     } catch (error) {
