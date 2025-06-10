@@ -32,15 +32,15 @@ async function getAccessToken(clientId, clientSecret) {
 
 async function getLatestAlbums(accessToken) {
     try {
-        const response = await fetch('https://api.spotify.com/v1/search?q=genre:metal&type=album&limit=10', {
+        const response = await fetch('https://api.spotify.com/v1/browse/new-releases?limit=10', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
             },
         });
 
         if (!response.ok) {
-            console.error(`Failed to fetch albums: ${response.status} ${response.statusText}`);
-            throw new Error(`Failed to fetch albums: ${response.status} ${response.statusText}`);
+            console.error(`Failed to fetch new releases: ${response.status} ${response.statusText}`);
+            throw new Error(`Failed to fetch new releases: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -52,7 +52,7 @@ async function getLatestAlbums(accessToken) {
 
         return data.albums.items;
     } catch (error) {
-        console.error('Error fetching albums:', error);
+        console.error('Error fetching new releases:', error);
         throw error;
     }
 }
