@@ -80,15 +80,24 @@ async function getAlbumsByGenre(accessToken, genre) {
         // Log release dates for debugging
         console.log('Release dates before sorting:', data.albums.items.map(album => album.release_date));
 
+        // Filter albums released in the last year
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+        const recentAlbums = data.albums.items.filter(album => {
+            const releaseDate = new Date(album.release_date || '1970-01-01');
+            return releaseDate >= oneYearAgo;
+        });
+
         // Sort albums by release date (if available)
-        const sortedAlbums = data.albums.items.sort((a, b) => {
+        const sortedAlbums = recentAlbums.sort((a, b) => {
             const dateA = new Date(a.release_date || '1970-01-01');
             const dateB = new Date(b.release_date || '1970-01-01');
             return dateB - dateA; // Descending order
         });
 
         // Log sorted albums for debugging
-        console.log('Sorted albums:', sortedAlbums);
+        console.log('Sorted recent albums:', sortedAlbums);
 
         return sortedAlbums;
     } catch (error) {
