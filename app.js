@@ -57,6 +57,33 @@ async function getLatestAlbums(accessToken) {
     }
 }
 
+async function getAlbumsByGenre(accessToken, genre) {
+    try {
+        const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${encodeURIComponent(genre)}&type=album&limit=10`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+
+        if (!response.ok) {
+            console.error(`Failed to fetch albums by genre: ${response.status} ${response.statusText}`);
+            throw new Error(`Failed to fetch albums by genre: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.albums || !data.albums.items) {
+            console.error('Invalid response structure:', data);
+            throw new Error('Invalid response structure from Spotify API');
+        }
+
+        return data.albums.items;
+    } catch (error) {
+        console.error('Error fetching albums by genre:', error);
+        throw error;
+    }
+}
+
 async function displayAlbums() {
     try {
         const accessToken = await getAccessToken();
