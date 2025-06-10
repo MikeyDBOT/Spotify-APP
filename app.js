@@ -89,7 +89,7 @@ async function displayAlbums(genre) {
         const accessToken = await getAccessToken(clientId, clientSecret);
         console.log('Access Token:', accessToken); // Debugging log
 
-        const albums = await getAlbumsByGenre(accessToken, genre);
+        const albums = await getAlbumsByGenre(accessToken, 'metal');
         console.log('Albums:', albums); // Debugging log
 
         const albumList = document.getElementById('album-list');
