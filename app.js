@@ -91,8 +91,8 @@ async function getAlbumsByGenre(accessToken, genre) {
 
             allAlbums = allAlbums.concat(data.albums.items);
 
-            // Break if fewer items than the limit are returned (end of results)
-            if (data.albums.items.length < limit) {
+            // Break if there is no next page
+            if (!data.albums.next) {
                 break;
             }
 
@@ -100,14 +100,21 @@ async function getAlbumsByGenre(accessToken, genre) {
         }
 
         // Log release dates for debugging
-        console.log('Release dates before sorting:', allAlbums.map(album => album.release_date));
+        console.log('Release dates before filtering:', allAlbums.map(album => album.release_date));
 
-        // If no albums are found, log a message
-        if (allAlbums.length === 0) {
-            console.log('No albums found for the specified genre.');
-        }
+        // Filter albums released in the current year and month
+        const currentYear = new Date().getFullYear();
+        const currentMonth = new Date().getMonth() + 1; // Months are 0-based
 
-        return allAlbums; // Return all albums without filtering
+        const filteredAlbums = allAlbums.filter(album => {
+            const releaseDate = new Date(album.release_date);
+            return releaseDate.getFullYear() === currentYear && (releaseDate.getMonth() + 1) === currentMonth;
+        });
+
+        // Log filtered albums for debugging
+        console.log('Filtered albums for current year and month:', filteredAlbums);
+
+        return filteredAlbums; // Return filtered albums
     } catch (error) {
         console.error('Error fetching albums by genre:', error);
         throw error;
