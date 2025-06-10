@@ -59,7 +59,7 @@ async function getLatestAlbums(accessToken) {
 
 async function getAlbumsByGenre(accessToken, genre) {
     try {
-        const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${encodeURIComponent(genre)}&type=album&limit=10`, {
+        const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${encodeURIComponent(genre)}&type=album&limit=50`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
             },
@@ -77,7 +77,14 @@ async function getAlbumsByGenre(accessToken, genre) {
             throw new Error('Invalid response structure from Spotify API');
         }
 
-        return data.albums.items;
+        // Sort albums by release date (if available)
+        const sortedAlbums = data.albums.items.sort((a, b) => {
+            const dateA = new Date(a.release_date || '1970-01-01');
+            const dateB = new Date(b.release_date || '1970-01-01');
+            return dateB - dateA; // Descending order
+        });
+
+        return sortedAlbums;
     } catch (error) {
         console.error('Error fetching albums by genre:', error);
         throw error;
