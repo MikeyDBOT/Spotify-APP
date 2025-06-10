@@ -1,5 +1,7 @@
-const clientId = 'YOUR_SPOTIFY_CLIENT_ID';
-const clientSecret = 'YOUR_SPOTIFY_CLIENT_SECRET';
+const clientId = '9ef802757a9c46469b8a914f3f06a641';
+const clientSecret = '529f6c9e934347e6b336723c175981b2';
+
+//https://mikeydbot.github.io/Spotify-APP/
 
 async function getAccessToken() {
     const response = await fetch('https://accounts.spotify.com/api/token', {
