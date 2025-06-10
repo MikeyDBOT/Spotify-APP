@@ -70,7 +70,7 @@ async function getAlbumsByGenre(accessToken, genre) {
         console.log(`Fetching albums for genre: ${genre}, year: ${currentYear}, month: ${currentMonth}`); // Debugging log
 
         while (true) {
-            const query = `genre:${encodeURIComponent(genre)}%20year:${currentYear}%20tag:new`;
+            const query = `genre:${encodeURIComponent(genre)}%20year:${currentYear}`; // Removed tag:new for testing
             console.log(`API Query: ${query}`); // Debugging log
 
             const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&limit=${limit}&offset=${offset}`, {
@@ -111,6 +111,12 @@ async function getAlbumsByGenre(accessToken, genre) {
             const releaseDate = new Date(album.release_date || '1970-01-01');
             return releaseDate.getFullYear() === currentYear && (releaseDate.getMonth() + 1) === currentMonth;
         });
+
+        // If no albums are found, fetch without filters as fallback
+        if (filteredAlbums.length === 0) {
+            console.log('No albums found for the current month and year. Fetching without filters as fallback.');
+            return allAlbums; // Return all albums without filtering
+        }
 
         // Sort albums by release date (if available)
         const sortedAlbums = filteredAlbums.sort((a, b) => {
