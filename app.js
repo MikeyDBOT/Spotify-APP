@@ -142,3 +142,5 @@ async function displayAlbums(genre) {
 
 // Example call to display albums by genre
 displayAlbums('metal');
+alert('Albums loaded successfully. Check the console for details.');
+
