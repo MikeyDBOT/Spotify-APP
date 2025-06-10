@@ -67,8 +67,13 @@ async function getAlbumsByGenre(accessToken, genre) {
         const currentYear = new Date().getFullYear();
         const currentMonth = new Date().getMonth() + 1; // Months are 0-based
 
+        console.log(`Fetching albums for genre: ${genre}, year: ${currentYear}, month: ${currentMonth}`); // Debugging log
+
         while (true) {
-            const response = await fetch(`https://api.spotify.com/v1/search?q=genre:${encodeURIComponent(genre)}%20year:${currentYear}%20tag:new&type=album&limit=${limit}&offset=${offset}`, {
+            const query = `genre:${encodeURIComponent(genre)}%20year:${currentYear}%20tag:new`;
+            console.log(`API Query: ${query}`); // Debugging log
+
+            const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&limit=${limit}&offset=${offset}`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -80,6 +85,8 @@ async function getAlbumsByGenre(accessToken, genre) {
             }
 
             const data = await response.json();
+
+            console.log('API Response:', data); // Debugging log
 
             if (!data.albums || !data.albums.items) {
                 console.error('Invalid response structure:', data);
