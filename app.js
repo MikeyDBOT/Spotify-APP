@@ -156,6 +156,52 @@ async function displayAlbums(genre) {
     }
 }
 
+async function displayPayload() {
+    try {
+        const accessToken = await getAccessToken(clientId, clientSecret);
+        console.log('Access Token:', accessToken); // Debugging log
+
+        const response = await fetch('https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A2025%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8', {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+
+        if (!response.ok) {
+            console.error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+            throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Payload:', data); // Debugging log
+
+        const payloadList = document.getElementById('payload-list');
+        payloadList.innerHTML = ''; // Clear the list before appending new items
+
+        if (!data.tracks || !data.tracks.items) {
+            console.log('No data found in the payload.');
+            payloadList.innerHTML = '<li>No data found.</li>';
+            return;
+        }
+
+        data.tracks.items.forEach((item, index) => {
+            console.log(`Appending item ${index + 1}:`, item.name); // Debugging log for each item
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} by ${item.artists.map(artist => artist.name).join(', ')}`;
+            payloadList.appendChild(listItem); // Append each item to the list
+        });
+
+        console.log('Payload list updated successfully.');
+    } catch (error) {
+        console.error('Error displaying payload:', error);
+        const payloadList = document.getElementById('payload-list');
+        payloadList.innerHTML = '<li>Error loading data. Please try again later.</li>';
+    }
+}
+
 // Example call to display albums by genre
 displayAlbums('metal');
+
+// Example call to display the payload
+displayPayload();
 
