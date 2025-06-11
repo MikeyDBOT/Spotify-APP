@@ -158,8 +158,25 @@ async function displayAlbums(genre) {
 
 async function displayPayload() {
     try {
-        const accessToken = await getAccessToken(clientId, clientSecret);
-        console.log('Access Token:', accessToken); // Debugging log
+        const body = new URLSearchParams();
+        body.append('grant_type', 'client_credentials');
+
+        const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + btoa(`${clientId}:${clientSecret}`),
+            },
+            body: body.toString(),
+        });
+
+        if (!tokenResponse.ok) {
+            console.error(`Failed to fetch access token: ${tokenResponse.status} ${tokenResponse.statusText}`);
+            throw new Error(`Failed to fetch access token: ${tokenResponse.status} ${tokenResponse.statusText}`);
+        }
+
+        const tokenData = await tokenResponse.json();
+        const accessToken = tokenData.access_token;
 
         const response = await fetch('https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A2025%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8', {
             headers: {
@@ -184,11 +201,13 @@ async function displayPayload() {
             return;
         }
 
-        data.tracks.items.forEach((item, index) => {
-            console.log(`Appending item ${index + 1}:`, item.name); // Debugging log for each item
+        data.tracks.items.forEach((item) => {
             const listItem = document.createElement('li');
-            listItem.textContent = `${item.name} by ${item.artists.map(artist => artist.name).join(', ')}`;
-            payloadList.appendChild(listItem); // Append each item to the list
+            const link = document.createElement('a');
+            link.href = item.external_urls.spotify;
+            link.textContent = `${item.name} by ${item.artists.map(artist => artist.name).join(', ')}`;
+            listItem.appendChild(link);
+            payloadList.appendChild(listItem);
         });
 
         console.log('Payload list updated successfully.');
@@ -198,9 +217,6 @@ async function displayPayload() {
         payloadList.innerHTML = '<li>Error loading data. Please try again later.</li>';
     }
 }
-
-// Example call to display albums by genre
-displayAlbums('metal');
 
 // Example call to display the payload
 displayPayload();
