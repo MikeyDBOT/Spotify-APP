@@ -32,7 +32,10 @@ async function getAccessToken(clientId, clientSecret) {
 
 async function getLatestAlbums(accessToken) {
     try {
-        const response = await fetch('https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A2025%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8', {
+        const currentYear = new Date().getFullYear();
+        const url = `https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A${currentYear}%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8`;
+
+        const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
             },
@@ -62,14 +65,17 @@ async function getAlbumsByGenre(accessToken, genre) {
         let allAlbums = [];
         let offset = 0;
         const limit = 50;
+        const currentYear = new Date().getFullYear();
 
         console.log(`Fetching albums for genre: ${genre}`); // Debugging log
 
         while (true) {
-            const query = genre ? `genre:${encodeURIComponent(genre)}` : ''; // Removed all filters for testing
+            const query = genre ? `year:${currentYear} genre:${encodeURIComponent(genre)}` : '';
             console.log(`API Query: ${query}`); // Debugging log
 
-            const response = await fetch(`https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A2025%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8`, {
+            const url = `https://api.spotify.com/v1/search?offset=${offset}&limit=${limit}&query=${query}&type=album&locale=en-GB,en-US&q%3D0.9,en;q%3D0.8`;
+
+            const response = await fetch(url, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
@@ -99,22 +105,7 @@ async function getAlbumsByGenre(accessToken, genre) {
             offset += limit; // Move to the next page
         }
 
-        // Log release dates for debugging
-        console.log('Release dates before filtering:', allAlbums.map(album => album.release_date));
-
-        // Filter albums released in the current year and month
-        const currentYear = new Date().getFullYear();
-        const currentMonth = new Date().getMonth() + 1; // Months are 0-based
-
-        const filteredAlbums = allAlbums.filter(album => {
-            const releaseDate = new Date(album.release_date);
-            return releaseDate.getFullYear() === currentYear && (releaseDate.getMonth() + 1) === currentMonth;
-        });
-
-        // Log filtered albums for debugging
-        console.log('Filtered albums for current year and month:', filteredAlbums);
-
-        return filteredAlbums; // Return filtered albums
+        return allAlbums; // Return all albums
     } catch (error) {
         console.error('Error fetching albums by genre:', error);
         throw error;
@@ -178,7 +169,10 @@ async function displayPayload() {
         const tokenData = await tokenResponse.json();
         const accessToken = tokenData.access_token;
 
-        const response = await fetch('https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A2025%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8', {
+        const currentYear = new Date().getFullYear();
+        const url = `https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A${currentYear}%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8`;
+
+        const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
             },
@@ -218,6 +212,7 @@ async function displayPayload() {
     }
 }
 
+// Ensure the function runs after the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     displayPayload();
 });
