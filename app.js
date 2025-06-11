@@ -218,6 +218,7 @@ async function displayPayload() {
     }
 }
 
-// Example call to display the payload
-displayPayload();
+document.addEventListener('DOMContentLoaded', () => {
+    displayPayload();
+});
 
