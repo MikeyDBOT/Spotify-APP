@@ -32,7 +32,7 @@ async function getAccessToken(clientId, clientSecret) {
 
 async function getLatestAlbums(accessToken) {
     try {
-        const response = await fetch('https://api.spotify.com/v1/browse/new-releases?limit=10', {
+        const response = await fetch('https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A2025%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8', {
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
             },
@@ -69,7 +69,7 @@ async function getAlbumsByGenre(accessToken, genre) {
             const query = genre ? `genre:${encodeURIComponent(genre)}` : ''; // Removed all filters for testing
             console.log(`API Query: ${query}`); // Debugging log
 
-            const response = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&limit=${limit}&offset=${offset}`, {
+            const response = await fetch(`https://api.spotify.com/v1/search?offset=0&limit=20&query=year%3A2025%20genre%3Ametal&type=track&locale=en-GB,en-US;q%3D0.9,en;q%3D0.8`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
                 },
